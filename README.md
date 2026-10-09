@@ -23,6 +23,23 @@ The API listens on `http://localhost:8080`. Health check: `GET /actuator/health`
 ./mvnw verify                   # Windows: .\mvnw.cmd verify
 ```
 
+## API overview
+
+All errors share one JSON shape:
+```json
+{"timestamp": "...", "status": 400, "error": "Bad Request", "message": "Validation failed",
+ "path": "/api/tasks", "fieldErrors": [{"field": "title", "message": "Title is required"}]}
+```
+
+### Q1 — Tasks
+| Method | Path | Notes |
+|--------|------|-------|
+| POST | `/api/tasks` | 201; `title` required (≤100), `dueDate` not in the past, `status` defaults to `TODO` |
+| GET | `/api/tasks?status=DONE` | list, optional status filter (`TODO`, `IN_PROGRESS`, `DONE`) |
+| GET | `/api/tasks/{id}` | 404 if unknown |
+| PUT | `/api/tasks/{id}` | full update; omitted `status` keeps the current one |
+| DELETE | `/api/tasks/{id}` | 204 |
+
 ## Questions
 
 | # | Question | PR link |
