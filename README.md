@@ -52,7 +52,7 @@ All errors share one JSON shape:
 | # | Question | PR link |
 |---|----------|---------|
 | 1 | Task Manager API | [#6](https://github.com/rakeshET/be-interview-prep/pull/6) |
-| 2 | URL Shortener | |
+| 2 | URL Shortener | [#7](https://github.com/rakeshET/be-interview-prep/pull/7) |
 | 3 | Authentication & Roles | |
 | 4 | Product Catalog | |
 | 5 | Order Service | |
