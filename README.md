@@ -89,6 +89,6 @@ Every order request needs an `Idempotency-Key` header (any unique string per log
 | 2 | URL Shortener | [#7](https://github.com/rakeshET/be-interview-prep/pull/7) |
 | 3 | Authentication & Roles | [#8](https://github.com/rakeshET/be-interview-prep/pull/8) |
 | 4 | Product Catalog | [#9](https://github.com/rakeshET/be-interview-prep/pull/9) |
-| 5 | Order Service | |
+| 5 | Order Service | [#10](https://github.com/rakeshET/be-interview-prep/pull/10) |
 
 **Video:**
