@@ -79,7 +79,7 @@ To see the cache working, run with `--logging.level.org.hibernate.SQL=debug` and
 | 1 | Task Manager API | [#6](https://github.com/rakeshET/be-interview-prep/pull/6) |
 | 2 | URL Shortener | [#7](https://github.com/rakeshET/be-interview-prep/pull/7) |
 | 3 | Authentication & Roles | [#8](https://github.com/rakeshET/be-interview-prep/pull/8) |
-| 4 | Product Catalog | |
+| 4 | Product Catalog | [#9](https://github.com/rakeshET/be-interview-prep/pull/9) |
 | 5 | Order Service | |
 
 **Video:**
