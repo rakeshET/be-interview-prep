@@ -18,3 +18,14 @@ management:
     web:
       exposure:
         include: health,info
+
+app:
+  jwt:
+    # No default on purpose: set JWT_SECRET (>= 32 chars), e.g. `openssl rand -base64 48`.
+    secret: ${JWT_SECRET}
+    ttl: 15m
+    issuer: be-interview-prep
+  admin:
+    # Optional: seeds an ADMIN user on startup when both are set.
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}
