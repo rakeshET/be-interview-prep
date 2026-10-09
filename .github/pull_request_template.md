@@ -1,14 +1,13 @@
-## Summary
+## Problem
+What this PR solves (1–2 lines).
 
-## Changes
--
+## Approach
+Key classes and how a request flows through them.
 
-## Acceptance Criteria
-- [ ]
+## Decisions & trade-offs
+What you chose, and why over the alternatives.
 
-## How to Test
-`./mvnw verify`
-
-## Notes
+## How to test
+Commands, sample requests, test classes.
 
 Closes #

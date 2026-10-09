@@ -1,41 +1,43 @@
 ---
 name: start-issue
-description: Start work on a GitHub issue - create a branch from latest main, assign the issue, plan against its acceptance criteria, implement with tests until ./mvnw verify is green, and commit. Use when the user says to start/pick up/work on an issue.
+description: Start work on a GitHub issue - create the assignment branch from latest main, assign the issue, plan against its acceptance criteria, implement with tests until ./mvnw verify is green, and commit in small steps. Use when the user says to start/pick up/work on an issue or question.
 argument-hint: <issue number>
 ---
 
 # Start issue
 
-Input: `$ARGUMENTS` — the issue number (strip a leading `#`). If missing, run `gh issue list --assignee @me --state open` and ask which one.
+Input: `$ARGUMENTS` — issue number (strip a leading `#`). If missing, `gh issue list --state open` and ask which one.
 
 ## 1. Load the issue
 `gh issue view <N> --json number,title,body,labels,state,url`
-- If `state` is `CLOSED`, stop and tell the user.
-- Extract the Requirements and Acceptance Criteria — they are the definition of done.
+- If `CLOSED`, stop.
+- Extract Requirements and Acceptance Criteria — the definition of done.
+- If the title starts with `Q<n>`, also re-read that question in `docs/ASSIGNMENT.md`.
 
-## 2. Prepare the branch
-1. `git status --porcelain` must be empty. If not, stop and ask the user what to do with the changes.
-2. `git fetch origin`.
-3. If `origin/main` does not exist (empty repo), tell the user `main` needs an initial commit first and stop.
-4. Derive the branch name `<type>/<N>-<slug>`:
-   - type from the title prefix (`feat:` → `feat`, etc.) or label (feature→feat, bug→fix); default `feat`.
-   - slug: title without prefix, lowercase, non-alphanumerics → `-`, max ~5 words.
-5. If the branch already exists locally or on origin, switch to it and continue. Otherwise: `git switch -c <branch> origin/main`.
-6. `gh issue edit <N> --add-assignee @me`.
+## 2. Gate on the previous question
+For `Q<n>` with n > 1: the PR for `Q<n-1>` must be merged.
+`gh pr list --state merged --search "Q<n-1> in:title"` — if empty, stop and tell the user to merge the previous PR first. Claude never merges.
 
-## 3. Plan
-Read `CLAUDE.md` and the relevant code. Produce a short plan mapping **each acceptance criterion → the classes/tests that satisfy it**. If the Spring Boot skeleton is missing, bootstrapping it (per `CLAUDE.md`) is the first step. Share the plan with the user before writing code.
+## 3. Prepare the branch
+1. `git status --porcelain` must be empty; otherwise stop and ask.
+2. `git switch main && git pull --ff-only origin main` (start from the latest main, as the assignment requires).
+3. Branch name — use the exact mapping from CLAUDE.md:
+   Q1 `feature/q1-task-api`, Q2 `feature/q2-url-shortener`, Q3 `feature/q3-auth`, Q4 `feature/q4-product-catalog`, Q5 `feature/q5-order-service`.
+   For non-question issues: `feature/<N>-<slug>`.
+4. If the branch exists, switch to it; otherwise `git switch -c <branch>`.
+5. `gh issue edit <N> --add-assignee @me`.
 
-## 4. Implement
-- Follow the conventions in `CLAUDE.md` (layering, DTO records, validation, `@RestControllerAdvice`, constructor injection).
-- Write/extend tests alongside the code: service unit tests, `@WebMvcTest` for controllers (happy path + error paths), `@DataJpaTest` for custom queries.
-- Run `./mvnw -q verify` (PowerShell: `.\mvnw.cmd -q verify`) and fix failures until green. Do not skip or disable tests to get green.
-- Stay in scope: anything outside the issue goes into a note for a follow-up `/create-issue`, not this branch.
+## 4. Plan
+Read `CLAUDE.md` and the relevant code. Map **each acceptance criterion → classes + the test that proves it**. Decide the design choices the interviewer will ask about (concurrency, alternatives) and note them for the PR's "Decisions & trade-offs".
 
-## 5. Commit
-- Small logical Conventional Commits referencing the issue, e.g. `feat(order): add create order endpoint (#<N>)`.
-- End each commit message with the co-author attribution line required by the session.
-- Do not push and do not open a PR — that is `/raise-pr`.
+## 5. Implement
+- Follow CLAUDE.md conventions (feature packages, DTO records, Bean Validation, shared `ApiError` via `GlobalExceptionHandler`, constructor injection, no secrets in code).
+- **Tests are mandatory**: every acceptance criterion and error path gets a test (MockMvc for HTTP contracts, `@SpringBootTest` for flows/concurrency, unit tests for services).
+- Run `./mvnw -q verify` (PowerShell `.\mvnw.cmd -q verify`) until green. Never skip or disable tests. Keep earlier questions' tests green.
+- Stay in scope; anything else becomes a note for a follow-up issue.
 
-## 6. Report
-Summarise what was done per acceptance criterion, the test results, any follow-ups, and suggest `/raise-pr`.
+## 6. Commit
+Small, meaningful commits with plain imperative messages, e.g. `Add create task endpoint`, `Return field errors for invalid input`, `Add tests for task validation`. Never `fix`/`changes`/`final`. End each message with the session's co-author attribution line. Don't push or open a PR — that's `/raise-pr`.
+
+## 7. Report
+Per acceptance criterion: done + which test proves it. Then suggest `/raise-pr`.

@@ -1,56 +1,49 @@
 ---
 name: raise-pr
-description: Verify the build, push the current issue branch, and open (or update) a GitHub pull request linked to its issue with a summary, test notes and acceptance-criteria checklist. Use when the user wants to raise/open/create a PR.
+description: Verify the build, update the README PR-link row, push the current feature branch, and open (or update) a GitHub pull request using the assignment's PR template (Problem / Approach / Decisions & trade-offs / How to test). Never merges. Use when the user wants to raise/open/create a PR.
 argument-hint: "[issue number]"
 ---
 
 # Raise PR
 
-Input: `$ARGUMENTS` — optional issue number. If absent, parse it from the branch name `<type>/<N>-<slug>`. If neither works, ask.
+Input: `$ARGUMENTS` — optional issue number. Otherwise find it with `gh issue list --search "Q<n> in:title"` using the `q<n>` in the branch name. If neither works, ask.
 
 ## 1. Preconditions
-1. `git rev-parse --abbrev-ref HEAD` — if `main`, stop: PRs must come from an issue branch (suggest `/start-issue`).
-2. `git status --porcelain` — if there are uncommitted changes, show them and ask whether to commit them (Conventional Commit referencing `#N`) or stop.
-3. `git fetch origin` and `git log --oneline origin/main..HEAD` — if there are no commits, stop.
-4. If `origin/main` has moved ahead, rebase is the user's call: tell them and ask before running `git rebase origin/main`.
+1. Current branch must not be `main` (else stop, suggest `/start-issue`).
+2. `git status --porcelain`: if dirty, show the changes and ask whether to commit them.
+3. `git fetch origin`; `git log --oneline origin/main..HEAD` must be non-empty.
+4. If `origin/main` has moved ahead of the branch base, tell the user and ask before rebasing.
 
 ## 2. Verify
-Run `./mvnw -q verify` (PowerShell: `.\mvnw.cmd -q verify`). If it fails, stop and report the failures — never open a PR on a red build.
+`./mvnw -q verify` (PowerShell `.\mvnw.cmd -q verify`). On failure stop and report — never open a PR on a red build. Confirm the branch adds tests (`git diff --stat origin/main...HEAD -- src/test`); if none, stop: every PR must include tests.
 
-## 3. Push
-`git push -u origin HEAD` (never force-push; if rejected, report and ask).
-
-## 4. Build the PR
-- `gh issue view <N> --json title,body` for the acceptance criteria.
-- `git log --format='- %s' origin/main..HEAD` and `git diff --stat origin/main...HEAD` for the change list.
-- Title: `<type>(<scope>): <summary> (#<N>)` — derive from the issue title.
-- Body (write to a scratchpad file), following `.github/pull_request_template.md`:
+## 3. Push and open the PR
+1. `git push -u origin HEAD` (never force).
+2. Title: `Q<n> — <question name>` (e.g. `Q1 — Task Manager API`).
+3. Body (scratchpad file) — the assignment's template, filled with real content:
 
 ```markdown
-## Summary
-What changed and why, 2–4 sentences.
+## Problem
+What this PR solves (1–2 lines).
 
-## Changes
-- Bullet per meaningful change (endpoints, entities, config, tests)
+## Approach
+Key classes and how a request flows through them (controller → service → repository → DB).
 
-## Acceptance Criteria
-- [x] criterion copied from the issue (tick only those actually satisfied)
-- [ ] criterion not done — with a reason
+## Decisions & trade-offs
+Each key choice, the alternatives considered, and why — especially concurrency, idempotency, caching, security.
 
-## How to Test
-`./mvnw verify`, plus sample `curl` requests for new endpoints.
-
-## Notes
-Assumptions, follow-ups, anything reviewers should focus on.
+## How to test
+`./mvnw verify`, the test classes and what each proves, and sample `curl` requests.
 
 Closes #<N>
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
-## 5. Create or update
-- `gh pr view --json number,url` on the current branch. If a PR exists: `gh pr edit <num> --title ... --body-file ...`.
-- Otherwise: `gh pr create --base main --head <branch> --title "<title>" --body-file <file>` and add the issue's label with `--label`.
+4. If a PR exists for the branch (`gh pr view --json number`), `gh pr edit`; else `gh pr create --base main --title ... --body-file ... --label question`.
 
-## 6. Report
-Print the PR URL and suggest `/pr-review <number>`.
+## 4. Update the README row
+Edit the question's row in the README PR-link table to `[#<pr>](<pr url>)`. Commit `Add Q<n> PR link to README` and push to the same branch.
+
+## 5. Stop
+Print the PR URL and say: **ready for you to review and merge; after merging, tell me to continue with the next question.** Claude never runs `gh pr merge`. Suggest `/pr-review <number>` for a self-review.

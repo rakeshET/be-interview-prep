@@ -1,8 +1,8 @@
 ---
-name: Task
-about: Feature, bug or chore for the backend
-title: "<type>: <summary>"
-labels: ""
+name: Question / task
+about: An assignment question (Q1–Q5) or other backend task
+title: "Q<n> — <question name>"
+labels: question
 assignees: ""
 ---
 
@@ -13,8 +13,9 @@ assignees: ""
 
 ## Acceptance Criteria
 - [ ]
-- [ ] Unit + slice tests cover the above and `./mvnw verify` passes
+- [ ] Automated tests cover the behaviour and error paths; `./mvnw verify` passes
 
 ## Technical Notes
 
-## Out of Scope
+## Branch
+`feature/q<n>-<slug>`
