@@ -72,6 +72,15 @@ All `/api/**` endpoints (Q1, Q2, ...) require `Authorization: Bearer <token>`; t
 
 To see the cache working, run with `--logging.level.org.hibernate.SQL=debug` and call `GET /api/products/1` twice: only the first call logs a `select`.
 
+### Q5 — Orders
+Every order request needs an `Idempotency-Key` header (any unique string per logical order, e.g. a UUID). Retrying with the same key returns the original order instead of creating a new one.
+| Method | Path | Notes |
+|--------|------|-------|
+| POST | `/api/orders` | body `{"items": [{"productId": 1, "quantity": 2}]}`; 201 new order, 200 + `Idempotent-Replayed: true` for a retry; 409 if any item lacks stock (nothing is reserved) |
+| GET | `/api/orders` | the caller's orders |
+| GET | `/api/orders/{id}` | own order (admins can see any) |
+| POST | `/api/orders/{id}/cancel` | returns the stock; cancelling twice is safe |
+
 ## Questions
 
 | # | Question | PR link |
