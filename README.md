@@ -62,6 +62,16 @@ All `/api/**` endpoints (Q1, Q2, ...) require `Authorization: Bearer <token>`; t
 | GET | `/api/users/me` | the caller's profile (any role) |
 | GET | `/api/admin/users` | all users, `ADMIN` only (403 for `USER`) |
 
+### Q4 — Product catalog
+100 products are seeded on startup. Reads need any logged-in user; create/update/delete need `ADMIN`.
+| Method | Path | Notes |
+|--------|------|-------|
+| GET | `/api/products?category=&minPrice=&maxPrice=&inStock=true&q=&page=0&size=20&sort=price,desc` | all filters optional and combinable; `size` capped at 100; sort by `id,name,category,price,stock,rating,createdAt`; response has `totalElements` and `totalPages` |
+| GET | `/api/products/{id}` | cached (Caffeine); evicted after an update/delete commits |
+| POST / PUT / DELETE | `/api/products[/{id}]` | `ADMIN` only |
+
+To see the cache working, run with `--logging.level.org.hibernate.SQL=debug` and call `GET /api/products/1` twice: only the first call logs a `select`.
+
 ## Questions
 
 | # | Question | PR link |
