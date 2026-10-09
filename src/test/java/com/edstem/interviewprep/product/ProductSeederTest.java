@@ -18,7 +18,7 @@ class ProductSeederTest {
             assertThat(p.getStock()).isNotNegative();
             assertThat(p.getRating()).isBetween(0.0, 5.0);
         });
-        assertThat(products).anyMatch(p -> p.getStock() == 0); // so the in-stock filter is meaningful
+        assertThat(products).anyMatch(p -> p.getStock() == 0);
         assertThat(products).extracting(Product::getCategory).hasSizeGreaterThan(1);
     }
 

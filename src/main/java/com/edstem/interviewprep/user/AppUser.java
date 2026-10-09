@@ -12,7 +12,6 @@ import jakarta.persistence.UniqueConstraint;
 import java.time.Instant;
 import org.hibernate.annotations.CreationTimestamp;
 
-// "user" is a reserved word in H2/PostgreSQL, hence "app_users".
 @Entity
 @Table(name = "app_users", uniqueConstraints = @UniqueConstraint(name = "uk_app_users_email", columnNames = "email"))
 public class AppUser {
@@ -24,7 +23,6 @@ public class AppUser {
     @Column(nullable = false, length = 254)
     private String email;
 
-    // BCrypt hash (salted, slow by design); the raw password is never stored.
     @Column(nullable = false, length = 100)
     private String passwordHash;
 
@@ -37,7 +35,6 @@ public class AppUser {
     private Instant createdAt;
 
     protected AppUser() {
-        // for JPA
     }
 
     public AppUser(String email, String passwordHash, Role role) {

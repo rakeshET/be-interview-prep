@@ -27,7 +27,6 @@ public class Task {
     @Column(length = 2000)
     private String description;
 
-    // Stored as text so reordering the enum can never silently corrupt existing rows.
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private TaskStatus status;
@@ -39,7 +38,6 @@ public class Task {
     private Instant createdAt;
 
     protected Task() {
-        // for JPA
     }
 
     public Task(String title, String description, TaskStatus status, LocalDate dueDate) {

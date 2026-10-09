@@ -25,10 +25,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-/**
- * Translates every exception into the shared {@link ApiError} JSON with the right HTTP status,
- * so clients only ever have to parse one error format.
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -44,7 +40,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleUnreadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        // A bad enum or date value in the body: report it against the offending field.
         if (ex.getCause() instanceof InvalidFormatException ife && !ife.getPath().isEmpty()) {
             String field = ife.getPath().stream()
                     .map(JsonMappingException.Reference::getFieldName)
@@ -79,13 +74,11 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, ex.getMessage(), request, List.of());
     }
 
-    /** Thrown inside controllers, e.g. bad credentials on login. Filter-level 401s use the entry point. */
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
         return build(HttpStatus.UNAUTHORIZED, "Invalid email or password", request, List.of());
     }
 
-    /** Method-level security (@PreAuthorize) failures would otherwise fall through to the 500 handler. */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
         return build(HttpStatus.FORBIDDEN, "You do not have permission to access this resource", request, List.of());
@@ -108,10 +101,6 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), request, List.of());
     }
 
-    /**
-     * Spring MVC's own client errors (415 unsupported media type, missing parameter, ...) carry their
-     * status; keep it instead of falling through to the 500 handler below.
-     */
     @ExceptionHandler(ErrorResponseException.class)
     public ResponseEntity<ApiError> handleSpringErrorResponse(ErrorResponseException ex, HttpServletRequest request) {
         return fromErrorResponse(ex, request);
@@ -124,7 +113,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleUnexpected(Exception ex, HttpServletRequest request) {
-        // Log the details server-side; never leak internals (stack traces, SQL) to the client.
         log.error("Unexpected error on {} {}", request.getMethod(), request.getRequestURI(), ex);
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", request, List.of());
     }

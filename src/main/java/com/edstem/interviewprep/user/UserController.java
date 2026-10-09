@@ -15,13 +15,11 @@ public class UserController {
         this.userService = userService;
     }
 
-    /** The caller's identity comes from the verified token's subject - never from a request parameter. */
     @GetMapping("/api/users/me")
     public UserResponse me(@AuthenticationPrincipal Jwt jwt) {
         return userService.getByEmail(jwt.getSubject());
     }
 
-    /** Restricted to ADMIN by the /api/admin/** rule in SecurityConfig. */
     @GetMapping("/api/admin/users")
     public List<UserResponse> listUsers() {
         return userService.listAll();

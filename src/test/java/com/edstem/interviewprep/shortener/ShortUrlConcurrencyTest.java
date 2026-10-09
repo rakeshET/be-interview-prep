@@ -32,7 +32,7 @@ class ShortUrlConcurrencyTest {
         try {
             for (int i = 0; i < VISITS; i++) {
                 results.add(pool.submit(() -> {
-                    start.await(); // release all visits at the same moment to maximise contention
+                    start.await();
                     return shortUrlService.resolveAndCountVisit(code);
                 }));
             }

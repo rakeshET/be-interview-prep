@@ -12,10 +12,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-/**
- * Seeds 100 products on startup when the table is empty. A fixed random seed makes the data
- * identical on every run, so demos and manual tests are reproducible.
- */
 @Component
 @ConditionalOnProperty(name = "app.catalog.seed", havingValue = "true", matchIfMissing = true)
 public class ProductSeeder implements ApplicationRunner {
@@ -51,7 +47,7 @@ public class ProductSeeder implements ApplicationRunner {
                     + NOUNS.get(random.nextInt(NOUNS.size())) + " " + i;
             String category = CATEGORIES.get(random.nextInt(CATEGORIES.size()));
             BigDecimal price = BigDecimal.valueOf(5 + random.nextDouble() * 495).setScale(2, RoundingMode.HALF_UP);
-            int stock = random.nextInt(5) == 0 ? 0 : random.nextInt(200); // ~20% out of stock
+            int stock = random.nextInt(5) == 0 ? 0 : random.nextInt(200);
             double rating = Math.round((1 + random.nextDouble() * 4) * 10) / 10.0;
             products.add(new Product(name, category, price, stock, rating));
         }

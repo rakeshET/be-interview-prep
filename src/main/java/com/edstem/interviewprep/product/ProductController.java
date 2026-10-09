@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Reads need any logged-in user; writes are ADMIN-only (see SecurityConfig). */
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -27,7 +26,6 @@ public class ProductController {
         this.productService = productService;
     }
 
-    /** e.g. {@code ?category=Books&minPrice=10&maxPrice=50&inStock=true&q=lamp&page=0&size=20&sort=price,desc} */
     @GetMapping
     public PageResponse<ProductResponse> list(@Valid @ModelAttribute ProductFilter filter,
                                               @PageableDefault(size = 20) Pageable pageable) {

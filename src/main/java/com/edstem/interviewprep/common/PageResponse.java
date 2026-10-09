@@ -3,10 +3,6 @@ package com.edstem.interviewprep.common;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
-/**
- * Stable JSON for paged results. Serialising Spring's {@code PageImpl} directly is discouraged: its
- * shape is an implementation detail that can change between versions.
- */
 public record PageResponse<T>(
         List<T> content,
         int page,

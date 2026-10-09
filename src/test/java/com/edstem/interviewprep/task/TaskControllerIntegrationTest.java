@@ -26,7 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithMockUser // these endpoints require a logged-in user since Q3
+@WithMockUser
 class TaskControllerIntegrationTest {
 
     @Autowired

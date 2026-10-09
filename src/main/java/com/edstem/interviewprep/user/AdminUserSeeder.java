@@ -9,10 +9,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-/**
- * Creates the first ADMIN from the ADMIN_EMAIL / ADMIN_PASSWORD environment variables, if both are set.
- * There is no default admin password anywhere in the source.
- */
 @Component
 public class AdminUserSeeder implements ApplicationRunner {
 

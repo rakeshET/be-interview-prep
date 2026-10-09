@@ -3,10 +3,6 @@ package com.edstem.interviewprep.product;
 import java.util.Locale;
 import org.springframework.data.jpa.domain.Specification;
 
-/**
- * Each filter is an independent predicate that is skipped when its value is absent, so they can be
- * combined freely into one WHERE clause - no query method per combination.
- */
 final class ProductSpecifications {
 
     private ProductSpecifications() {
@@ -46,7 +42,6 @@ final class ProductSpecifications {
         if (text == null || text.isBlank()) {
             return null;
         }
-        // Escape LIKE wildcards so a search for "50%" means the literal text, not "starts with 50".
         String escaped = text.trim().toLowerCase(Locale.ROOT)
                 .replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
         return (root, query, cb) -> cb.like(cb.lower(root.get("name")), "%" + escaped + "%", '\\');

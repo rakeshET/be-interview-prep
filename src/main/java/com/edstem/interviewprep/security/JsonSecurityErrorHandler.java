@@ -13,11 +13,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
-/**
- * 401/403 raised by the security filter chain happen before any controller runs, so
- * {@code @RestControllerAdvice} never sees them. This writes the same {@code ApiError} JSON instead
- * of Spring's default (empty body / HTML error page).
- */
 @Component
 public class JsonSecurityErrorHandler implements AuthenticationEntryPoint, AccessDeniedHandler {
 
@@ -27,7 +22,6 @@ public class JsonSecurityErrorHandler implements AuthenticationEntryPoint, Acces
         this.objectMapper = objectMapper;
     }
 
-    /** Not logged in, or the token is missing, malformed, tampered with or expired. */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException ex)
             throws IOException {
@@ -35,7 +29,6 @@ public class JsonSecurityErrorHandler implements AuthenticationEntryPoint, Acces
         write(response, HttpStatus.UNAUTHORIZED, "Authentication required: provide a valid Bearer token", request);
     }
 
-    /** Logged in, but the role doesn't allow this endpoint. */
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex)
             throws IOException {

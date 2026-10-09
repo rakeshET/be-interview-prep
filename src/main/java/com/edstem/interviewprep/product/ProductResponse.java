@@ -3,7 +3,6 @@ package com.edstem.interviewprep.product;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/** Immutable, so it is safe to share from the cache between concurrent requests. */
 public record ProductResponse(
         Long id,
         String name,

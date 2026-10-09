@@ -22,10 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-/**
- * Proves caching by counting the SQL statements Hibernate really sends to the database
- * (Hibernate statistics), not by trusting the annotation.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithMockUser(roles = "ADMIN")
@@ -98,7 +94,6 @@ class ProductCacheTest {
     void failedUpdateLeavesTheCachedValueCorrect() throws Exception {
         mockMvc.perform(get("/api/products/" + productId)).andExpect(status().isOk());
 
-        // Invalid body: rejected before the service runs, so the cached entry must still be the real data.
         mockMvc.perform(put("/api/products/" + productId).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new ProductRequest("", "Home", new BigDecimal("1.00"), 1, 1.0))))

@@ -7,10 +7,6 @@ import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-/**
- * Bound from {@code app.jwt.*}. The secret has no default: it comes from the {@code JWT_SECRET}
- * environment variable, and the app refuses to start without one (or with one too short for HS256).
- */
 @Validated
 @ConfigurationProperties(prefix = "app.jwt")
 public record JwtProperties(
