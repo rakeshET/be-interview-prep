@@ -12,8 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.ErrorResponse;
+import org.springframework.web.ErrorResponseException;
+import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -74,11 +78,31 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), request, List.of());
     }
 
+    /**
+     * Spring MVC's own client errors (415 unsupported media type, missing parameter, ...) carry their
+     * status; keep it instead of falling through to the 500 handler below.
+     */
+    @ExceptionHandler(ErrorResponseException.class)
+    public ResponseEntity<ApiError> handleSpringErrorResponse(ErrorResponseException ex, HttpServletRequest request) {
+        return fromErrorResponse(ex, request);
+    }
+
+    @ExceptionHandler({HttpMediaTypeException.class, MissingRequestValueException.class})
+    public ResponseEntity<ApiError> handleSpringClientError(Exception ex, HttpServletRequest request) {
+        return fromErrorResponse((ErrorResponse) ex, request);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleUnexpected(Exception ex, HttpServletRequest request) {
         // Log the details server-side; never leak internals (stack traces, SQL) to the client.
         log.error("Unexpected error on {} {}", request.getMethod(), request.getRequestURI(), ex);
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", request, List.of());
+    }
+
+    private static ResponseEntity<ApiError> fromErrorResponse(ErrorResponse ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
+        String detail = ex.getBody().getDetail();
+        return build(status, detail != null ? detail : status.getReasonPhrase(), request, List.of());
     }
 
     private static String allowedValues(Class<?> type) {

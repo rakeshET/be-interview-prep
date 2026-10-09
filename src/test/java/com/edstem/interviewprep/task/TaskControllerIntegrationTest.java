@@ -96,6 +96,14 @@ class TaskControllerIntegrationTest {
     }
 
     @Test
+    void unsupportedContentTypeReturns415NotA500() throws Exception {
+        mockMvc.perform(post("/api/tasks").contentType(MediaType.TEXT_PLAIN).content("title"))
+                .andExpect(status().isUnsupportedMediaType())
+                .andExpect(jsonPath("$.status").value(415))
+                .andExpect(jsonPath("$.path").value("/api/tasks"));
+    }
+
+    @Test
     void unknownTaskReturns404ForGetUpdateAndDelete() throws Exception {
         mockMvc.perform(get("/api/tasks/999"))
                 .andExpect(status().isNotFound())
