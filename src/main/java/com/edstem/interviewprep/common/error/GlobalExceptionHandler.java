@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.ErrorResponseException;
 import org.springframework.web.HttpMediaTypeException;
@@ -66,6 +68,23 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), request, List.of());
     }
 
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> handleConflict(ConflictException ex, HttpServletRequest request) {
+        return build(HttpStatus.CONFLICT, ex.getMessage(), request, List.of());
+    }
+
+    /** Thrown inside controllers, e.g. bad credentials on login. Filter-level 401s use the entry point. */
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiError> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
+        return build(HttpStatus.UNAUTHORIZED, "Invalid email or password", request, List.of());
+    }
+
+    /** Method-level security (@PreAuthorize) failures would otherwise fall through to the 500 handler. */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+        return build(HttpStatus.FORBIDDEN, "You do not have permission to access this resource", request, List.of());
+    }
+
     @ExceptionHandler(GoneException.class)
     public ResponseEntity<ApiError> handleGone(GoneException ex, HttpServletRequest request) {
         return build(HttpStatus.GONE, ex.getMessage(), request, List.of());
@@ -115,6 +134,10 @@ public class GlobalExceptionHandler {
             return ". Allowed values: " + Arrays.toString(type.getEnumConstants());
         }
         return "";
+    }
+
+    public static ApiError body(HttpStatus status, String message, String path) {
+        return new ApiError(Instant.now(), status.value(), status.getReasonPhrase(), message, path, List.of());
     }
 
     static ResponseEntity<ApiError> build(HttpStatus status, String message, HttpServletRequest request,
