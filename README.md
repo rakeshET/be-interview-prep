@@ -68,7 +68,7 @@ All `/api/**` endpoints (Q1, Q2, ...) require `Authorization: Bearer <token>`; t
 |---|----------|---------|
 | 1 | Task Manager API | [#6](https://github.com/rakeshET/be-interview-prep/pull/6) |
 | 2 | URL Shortener | [#7](https://github.com/rakeshET/be-interview-prep/pull/7) |
-| 3 | Authentication & Roles | |
+| 3 | Authentication & Roles | [#8](https://github.com/rakeshET/be-interview-prep/pull/8) |
 | 4 | Product Catalog | |
 | 5 | Order Service | |
 
