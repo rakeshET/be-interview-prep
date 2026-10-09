@@ -13,15 +13,21 @@ Backend interview prep assignment: five Spring Boot features, each delivered as 
 - No database or Maven install needed (H2 in-memory + `./mvnw`)
 
 ## Run the app
+The JWT signing secret is never committed; provide it (at least 32 characters) via `JWT_SECRET`.
+Optionally seed an admin with `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
 ```bash
-./mvnw spring-boot:run          # Windows: .\mvnw.cmd spring-boot:run
+export JWT_SECRET=$(openssl rand -base64 48)
+export ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=change-me-please   # optional
+./mvnw spring-boot:run
 ```
+PowerShell: `$env:JWT_SECRET = [Convert]::ToBase64String((1..48 | % { Get-Random -Max 256 }) -as [byte[]]); .\mvnw.cmd spring-boot:run`
 The API listens on `http://localhost:8080`. Health check: `GET /actuator/health`.
 
 ## Run the tests
 ```bash
 ./mvnw verify                   # Windows: .\mvnw.cmd verify
 ```
+Tests generate their own random JWT secret, so no environment variables are needed.
 
 ## API overview
 
@@ -46,6 +52,15 @@ All errors share one JSON shape:
 | POST | `/api/urls` | 201; body `{"url": "https://...", "expiresAt": "2030-01-01T00:00:00Z"}` (expiry optional) → `code`, `shortUrl` |
 | GET | `/r/{code}` | 302 redirect to the original URL and counts the visit; 404 unknown, 410 expired |
 | GET | `/api/urls/{code}/stats` | original URL, visit count, created date |
+
+### Q3 — Authentication & roles
+All `/api/**` endpoints (Q1, Q2, ...) require `Authorization: Bearer <token>`; the `/r/{code}` redirect stays public.
+| Method | Path | Notes |
+|--------|------|-------|
+| POST | `/api/auth/register` | 201; `{"email", "password"}` (8–72 chars); always creates a `USER`; 409 if the email exists |
+| POST | `/api/auth/login` | `{"accessToken", "tokenType": "Bearer", "expiresIn": 900}` (15 minutes) |
+| GET | `/api/users/me` | the caller's profile (any role) |
+| GET | `/api/admin/users` | all users, `ADMIN` only (403 for `USER`) |
 
 ## Questions
 
