@@ -40,6 +40,13 @@ All errors share one JSON shape:
 | PUT | `/api/tasks/{id}` | full update; omitted `status` keeps the current one |
 | DELETE | `/api/tasks/{id}` | 204 |
 
+### Q2 — URL shortener
+| Method | Path | Notes |
+|--------|------|-------|
+| POST | `/api/urls` | 201; body `{"url": "https://...", "expiresAt": "2030-01-01T00:00:00Z"}` (expiry optional) → `code`, `shortUrl` |
+| GET | `/r/{code}` | 302 redirect to the original URL and counts the visit; 404 unknown, 410 expired |
+| GET | `/api/urls/{code}/stats` | original URL, visit count, created date |
+
 ## Questions
 
 | # | Question | PR link |
