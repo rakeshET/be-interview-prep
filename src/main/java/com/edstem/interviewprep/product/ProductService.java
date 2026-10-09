@@ -32,7 +32,6 @@ public class ProductService {
                 .map(ProductResponse::from));
     }
 
-    /** Hits the database only on a cache miss; the key is the product id. */
     @Cacheable(cacheNames = ProductCacheConfig.PRODUCTS_CACHE, key = "#id")
     public ProductResponse get(Long id) {
         return ProductResponse.from(findOrThrow(id));
@@ -45,7 +44,6 @@ public class ProductService {
         return ProductResponse.from(productRepository.save(product));
     }
 
-    /** Evicts (after commit) rather than caching the new value: the next read reloads committed data. */
     @Transactional
     @CacheEvict(cacheNames = ProductCacheConfig.PRODUCTS_CACHE, key = "#id")
     public ProductResponse update(Long id, ProductRequest request) {
@@ -65,11 +63,6 @@ public class ProductService {
         return productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product", id));
     }
 
-    /**
-     * Caps the page size and only allows sorting on known fields. An unknown sort property would
-     * otherwise surface as a 500 from deep inside the JPA query, and arbitrary paths could reach into
-     * associations.
-     */
     private static Pageable sanitize(Pageable pageable) {
         for (Sort.Order order : pageable.getSort()) {
             if (!SORTABLE_FIELDS.contains(order.getProperty())) {

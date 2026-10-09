@@ -5,10 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
-/**
- * Body for create and update. {@code status} is optional: it defaults to TODO on create
- * and keeps the current value on update.
- */
 public record TaskRequest(
         @NotBlank(message = "Title is required")
         @Size(max = 100, message = "Title must be at most 100 characters")

@@ -80,13 +80,12 @@ class ProductCatalogIntegrationTest {
 
     @Test
     void allFiltersCombineInASingleRequest() throws Exception {
-        // Pick filter values from real seeded data so the combination is guaranteed to match something.
         Product sample = productRepository.findAll().stream()
                 .filter(p -> p.getStock() > 0).findFirst().orElseThrow();
         String category = sample.getCategory();
         BigDecimal min = sample.getPrice().subtract(BigDecimal.valueOf(100)).max(BigDecimal.ZERO);
         BigDecimal max = sample.getPrice().add(BigDecimal.valueOf(100));
-        String q = sample.getName().split(" ")[1].toLowerCase(Locale.ROOT); // e.g. "lamp"
+        String q = sample.getName().split(" ")[1].toLowerCase(Locale.ROOT);
 
         JsonNode content = content(get("/api/products")
                 .param("category", category.toUpperCase(Locale.ROOT))

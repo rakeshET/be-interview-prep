@@ -40,7 +40,6 @@ public class TaskService {
     public TaskResponse update(Long id, TaskRequest request) {
         Task task = findOrThrow(id);
         TaskStatus status = request.status() != null ? request.status() : task.getStatus();
-        // No explicit save(): the entity is managed, so the change is flushed on commit.
         task.update(request.title(), request.description(), status, request.dueDate());
         return TaskResponse.from(task);
     }

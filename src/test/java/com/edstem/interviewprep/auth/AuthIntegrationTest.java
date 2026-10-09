@@ -62,8 +62,6 @@ class AuthIntegrationTest {
         userRepository.deleteAll();
     }
 
-    // --- Acceptance criterion: a USER cannot access the admin endpoint ---
-
     @Test
     void userCannotAccessAdminEndpoint() throws Exception {
         register("user@example.com");
@@ -98,8 +96,6 @@ class AuthIntegrationTest {
                 .andExpect(jsonPath("$.email").value("user@example.com"))
                 .andExpect(jsonPath("$.role").value("USER"));
     }
-
-    // --- 401 as JSON, never an HTML page ---
 
     @Test
     void requestWithoutTokenReturns401Json() throws Exception {
@@ -155,8 +151,6 @@ class AuthIntegrationTest {
         assertThat(Duration.between(jwt.getIssuedAt(), jwt.getExpiresAt())).isEqualTo(Duration.ofMinutes(15));
         assertThat(jwt.getClaimAsStringList("roles")).containsExactly("USER");
     }
-
-    // --- Register / login ---
 
     @Test
     void passwordIsStoredAsBcryptHashNotPlainText() throws Exception {

@@ -33,10 +33,6 @@ public class ShortUrlController {
         return ResponseEntity.created(shortUrl).body(body);
     }
 
-    /**
-     * 302 (not 301) so browsers don't cache the redirect: every visit reaches us and is counted,
-     * and an expired link stops working immediately.
-     */
     @GetMapping(REDIRECT_PREFIX + "{code}")
     public ResponseEntity<Void> redirect(@PathVariable String code) {
         String target = shortUrlService.resolveAndCountVisit(code);

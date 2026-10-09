@@ -11,10 +11,6 @@ import java.lang.annotation.Target;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-/**
- * An absolute http(s) URL with a host. Stricter than Hibernate's {@code @URL}, which also accepts
- * schemes like {@code ftp:} or {@code javascript:} that we must never redirect to.
- */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = HttpUrl.Validator.class)
@@ -31,7 +27,7 @@ public @interface HttpUrl {
         @Override
         public boolean isValid(String value, ConstraintValidatorContext context) {
             if (value == null || value.isBlank()) {
-                return true; // @NotBlank reports missing values
+                return true;
             }
             try {
                 URI uri = new URI(value.trim());

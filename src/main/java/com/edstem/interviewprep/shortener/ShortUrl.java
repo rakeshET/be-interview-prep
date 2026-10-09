@@ -18,7 +18,6 @@ public class ShortUrl {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // The unique constraint (which also gives us the lookup index) is the real guarantee of uniqueness.
     @Column(nullable = false, length = 8)
     private String code;
 
@@ -27,7 +26,6 @@ public class ShortUrl {
 
     private Instant expiresAt;
 
-    // Only ever changed by an atomic UPDATE in ShortUrlRepository, never by read-modify-write.
     @Column(nullable = false)
     private long visitCount;
 
@@ -36,7 +34,6 @@ public class ShortUrl {
     private Instant createdAt;
 
     protected ShortUrl() {
-        // for JPA
     }
 
     public ShortUrl(String code, String originalUrl, Instant expiresAt) {

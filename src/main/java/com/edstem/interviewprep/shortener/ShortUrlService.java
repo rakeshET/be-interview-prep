@@ -20,11 +20,6 @@ public class ShortUrlService {
         this.codeGenerator = codeGenerator;
     }
 
-    /**
-     * Every call creates a new code, even for a URL that was shortened before (see PR for why).
-     * Deliberately not @Transactional: each saveAndFlush is its own transaction, so a unique-constraint
-     * violation from a code collision doesn't poison an outer transaction and we can simply retry.
-     */
     public ShortUrl shorten(ShortenRequest request) {
         String url = request.url().trim();
         for (int attempt = 1; attempt <= MAX_CODE_ATTEMPTS; attempt++) {
@@ -35,16 +30,12 @@ public class ShortUrlService {
             try {
                 return shortUrlRepository.saveAndFlush(new ShortUrl(code, url, request.expiresAt()));
             } catch (DataIntegrityViolationException e) {
-                // Another request inserted the same code between our check and insert: try a new one.
             }
         }
         throw new IllegalStateException("Could not generate a unique short code after " + MAX_CODE_ATTEMPTS
                 + " attempts");
     }
 
-    /**
-     * Resolves a code for a redirect and counts the visit atomically in the database.
-     */
     @Transactional
     public String resolveAndCountVisit(String code) {
         ShortUrl shortUrl = findOrThrow(code);

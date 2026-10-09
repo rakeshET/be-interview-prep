@@ -3,10 +3,6 @@ package com.edstem.interviewprep.shortener;
 import java.security.SecureRandom;
 import org.springframework.stereotype.Component;
 
-/**
- * Random Base62 codes: URL-safe without encoding, and 62^7 ≈ 3.5 trillion combinations,
- * so collisions are rare and handled by a retry in {@link ShortUrlService}.
- */
 @Component
 public class ShortCodeGenerator {
 
