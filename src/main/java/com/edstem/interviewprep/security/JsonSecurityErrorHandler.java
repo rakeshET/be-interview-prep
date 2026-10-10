@@ -1,6 +1,7 @@
 package com.edstem.interviewprep.security;
 
-import com.edstem.interviewprep.common.error.GlobalExceptionHandler;
+import com.edstem.interviewprep.exception.GlobalExceptionHandler;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
