@@ -11,11 +11,11 @@ GitHub: `rakeshET/be-interview-prep` (public). The assignment spec is in `docs/A
 - Base package: `com.edstem.interviewprep`
 
 ## Code conventions
-- Package by feature: `task/`, `shortener/`, `auth/`, `product/`, `order/`; shared code in `common/`.
+- Package by layer: `config/` (Spring config, `@ConfigurationProperties`, seeders), `controller/`, `service/`, `repository/` (incl. JPA specifications), `entity/` (JPA entities + enums), `dto/request/`, `dto/response/`, `exception/` (domain exceptions, `ApiError`, `GlobalExceptionHandler`), `security/` (JWT token service, security error handlers), `validation/` (custom constraints). Tests mirror the package of the class under test.
 - Layering: `controller → service → repository`. Thin controllers; business logic in services.
 - Request/response DTOs as Java `record`s; never expose JPA entities from controllers.
 - Bean Validation on all input (`@Valid`, `@NotBlank`, `@Size`, ...).
-- All errors go through `common/error/GlobalExceptionHandler` and return the shared `ApiError` JSON with the right HTTP status. Throw domain exceptions (e.g. `NotFoundException`), don't build error responses in controllers.
+- All errors go through `exception/GlobalExceptionHandler` and return the shared `ApiError` JSON with the right HTTP status. Throw domain exceptions (e.g. `NotFoundException`), don't build error responses in controllers.
 - Constructor injection only. No secrets in code or `application.yml` — read them from env vars.
 - No comments in Java code. Use clear names instead, and put the reasoning behind design decisions in the PR's "Decisions & trade-offs".
 
