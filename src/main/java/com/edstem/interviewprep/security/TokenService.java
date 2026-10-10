@@ -1,6 +1,10 @@
 package com.edstem.interviewprep.security;
 
-import com.edstem.interviewprep.user.AppUser;
+import com.edstem.interviewprep.config.JwtProperties;
+import com.edstem.interviewprep.config.SecurityConfig;
+import com.edstem.interviewprep.entity.AppUser;
+import com.edstem.interviewprep.entity.Role;
+
 import java.time.Instant;
 import java.util.List;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;

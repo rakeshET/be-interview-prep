@@ -31,7 +31,7 @@ For `Q<n>` with n > 1: the PR for `Q<n-1>` must be merged.
 Read `CLAUDE.md` and the relevant code. Map **each acceptance criterion → classes + the test that proves it**. Decide the design choices the interviewer will ask about (concurrency, alternatives) and note them for the PR's "Decisions & trade-offs".
 
 ## 5. Implement
-- Follow CLAUDE.md conventions (feature packages, DTO records, Bean Validation, shared `ApiError` via `GlobalExceptionHandler`, constructor injection, no secrets in code).
+- Follow CLAUDE.md conventions (layered packages, DTO records, Bean Validation, shared `ApiError` via `GlobalExceptionHandler`, constructor injection, no secrets in code).
 - **Tests are mandatory**: every acceptance criterion and error path gets a test (MockMvc for HTTP contracts, `@SpringBootTest` for flows/concurrency, unit tests for services).
 - Run `./mvnw -q verify` (PowerShell `.\mvnw.cmd -q verify`) until green. Never skip or disable tests. Keep earlier questions' tests green.
 - Stay in scope; anything else becomes a note for a follow-up issue.
